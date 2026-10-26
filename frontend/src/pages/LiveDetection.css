@@ -1,0 +1,296 @@
+/* =========================================================
+   SAFEVISION AI — LIVE DETECTION
+   =========================================================
+
+   Camera stage + side readouts. Uses the global tokens
+   from styles.css. The video / overlay geometry rules are
+   unchanged so the canvas stays aligned with detections.
+
+   ========================================================= */
+
+.live-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: start;
+  gap: 20px;
+}
+
+
+/* ---------- Heading ---------- */
+
+.live-heading {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 6px 14px 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.live-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.live-status.active {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.live-status.active::before {
+  background: #ffffff;
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+
+/* ---------- Error ---------- */
+
+.live-error {
+  grid-column: 1 / -1;
+  padding: 13px 16px;
+  border: 1px solid var(--danger);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--danger-tint);
+  color: var(--danger-ink);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+/* ---------- Camera ---------- */
+
+.camera-panel {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.camera-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #0e1012;
+}
+
+.live-video,
+.live-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.live-video {
+  object-fit: contain;
+}
+
+.live-overlay {
+  pointer-events: none;
+}
+
+
+/* Viewfinder corners shown while the camera is off */
+
+.camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 30px;
+  color: #8f9396;
+  font-size: 14.5px;
+  text-align: center;
+  background:
+    linear-gradient(var(--accent), var(--accent)) left 22px top 22px / 28px 2px,
+    linear-gradient(var(--accent), var(--accent)) left 22px top 22px / 2px 28px,
+    linear-gradient(var(--accent), var(--accent)) right 22px top 22px / 28px 2px,
+    linear-gradient(var(--accent), var(--accent)) right 22px top 22px / 2px 28px,
+    linear-gradient(var(--accent), var(--accent)) left 22px bottom 22px / 28px 2px,
+    linear-gradient(var(--accent), var(--accent)) left 22px bottom 22px / 2px 28px,
+    linear-gradient(var(--accent), var(--accent)) right 22px bottom 22px / 28px 2px,
+    linear-gradient(var(--accent), var(--accent)) right 22px bottom 22px / 2px 28px;
+  background-repeat: no-repeat;
+}
+
+.camera-placeholder strong {
+  color: #f2f0ea;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+
+/* ---------- Controls ---------- */
+
+.camera-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 0 0;
+}
+
+.camera-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.camera-controls button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--ink-3);
+}
+
+.camera-controls button:nth-child(2) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.camera-controls button:nth-child(2):hover:not(:disabled) {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+}
+
+.camera-controls.detecting button:nth-child(2) {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.camera-controls.detecting button:nth-child(2):hover {
+  opacity: 0.88;
+  background: var(--ink);
+}
+
+
+/* ---------- Readouts ---------- */
+
+.live-stats {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.live-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.live-stats div:last-child {
+  border-bottom: 0;
+}
+
+.live-stats span {
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.live-stats strong {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .live-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .live-stats {
+    flex-direction: row;
+  }
+
+  .live-stats div {
+    flex: 1;
+    min-width: 0;
+    border-bottom: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .live-stats div:first-child {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .live-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .camera-panel {
+    padding: 8px;
+  }
+
+  .camera-controls button {
+    flex: 1;
+    padding: 0 12px;
+  }
+
+  .live-stats div {
+    padding: 14px;
+  }
+
+  .live-stats strong {
+    font-size: 30px;
+  }
+}
